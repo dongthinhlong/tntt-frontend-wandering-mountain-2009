@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TNTT KIM THÀNH - Hệ thống quản lý</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="login-page" id="login-page">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-logo">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    </svg>
+                </div>
+                <h1>TNTT KIM THÀNH</h1>
+                <p>Hệ thống quản lý học sinh</p>
+            </div>
+            
+            <form class="login-form" id="login-form">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="login-email" required placeholder="Nhập email của bạn">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu</label>
+                    <input type="password" class="form-control" id="login-password" required placeholder="Nhập mật khẩu">
+                </div>
+                
+                <button type="submit" class="btn btn--primary btn--full-width" id="login-submit-btn">
+                    Đăng nhập
+                </button>
+                
+                <div class="login-demo">
+                    <p>Tài khoản demo:</p>
+                    <div class="demo-accounts">
+                        <button type="button" class="btn btn--outline btn--sm demo-btn" data-email="admin@tntt.com" data-password="admin123">Admin</button>
+                        <button type="button" class="btn btn--outline btn--sm demo-btn" data-email="teacher1@tntt.com" data-password="teacher123">Giáo viên</button>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="connection-status" id="connection-status">
+                <span class="status-indicator" id="status-indicator"></span>
+                <span id="status-text">Đang kết nối...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="main-app hidden" id="main-app">
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="navbar__container">
+                <div class="navbar__brand">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    </svg>
+                    <span>TNTT KIM THÀNH</span>
+                </div>
+                <div class="navbar__menu">
+                    <button class="navbar__item navbar__item--active" data-page="students">Học sinh</button>
+                    <button class="navbar__item" data-page="scores">Nhập điểm</button>
+                    <button class="navbar__item navbar__item--admin" data-page="dashboard">Dashboard</button>
+                    <button class="navbar__item navbar__item--admin" data-page="users">Quản lý Users</button>
+                    <button class="navbar__item navbar__item--admin" data-page="classes">Quản lý Lớp</button>
+                </div>
+                <div class="navbar__user">
+                    <span class="user-role" id="user-role">USER</span>
+                    <span class="user-name" id="user-name">Người dùng</span>
+                    <button class="btn btn--outline btn--sm" id="logout-btn">Đăng xuất</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Students Page -->
+        <div class="page" id="students-page">
+            <div class="container">
+                <header class="page-header">
+                    <div class="page-header__content">
+                        <div class="page-header__title">
+                            <h1>Quản lý Học sinh</h1>
+                            <p>Danh sách học sinh TNTT Kim Thành</p>
+                        </div>
+                        <button class="btn btn--primary add-student-btn" id="add-student-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M8 12h8"/>
+                                <path d="M12 8v8"/>
+                            </svg>
+                            Thêm học sinh
+                        </button>
+                    </div>
+                </header>
+
+                <div class="search-section">
+                    <div class="search-input-wrapper">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                        <input type="text" id="students-search" class="form-control search-input" placeholder="Tìm kiếm học sinh...">
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-buttons" id="students-filter">
+                        <!-- Filter buttons will be populated by JS -->
+                    </div>
+                </div>
+
+                <div class="students-grid" id="students-grid">
+                    <!-- Students will be populated by JS -->
+                </div>
+
+                <div class="no-results hidden" id="students-no-results">
+                    <div class="no-results__content">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                        <h3>Không tìm thấy học sinh</h3>
+                        <p>Thử tìm kiếm với từ khóa khác hoặc thay đổi bộ lọc</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scores Page -->
+        <div class="page hidden" id="scores-page">
+            <div class="container">
+                <header class="page-header">
+                    <h1>Nhập điểm học sinh</h1>
+                    <p>Nhập điểm cho các kỳ thi và kiểm tra</p>
+                </header>
+
+                <div class="filter-section">
+                    <div class="score-controls">
+                        <div class="filter-buttons" id="scores-filter">
+                            <!-- Filter buttons will be populated by JS -->
+                        </div>
+                        <select class="form-control score-type-select" id="score-type">
+                            <option value="GK1">Giữa kỳ 1</option>
+                            <option value="HK1">Học kỳ 1</option>
+                            <option value="GK2">Giữa kỳ 2</option>
+                            <option value="HK2">Học kỳ 2</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="scores-grid" id="scores-grid">
+                    <!-- Score cards will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div class="page hidden" id="dashboard-page">
+            <div class="container">
+                <header class="page-header">
+                    <h1>Dashboard</h1>
+                    <p>Thống kê tổng quan hệ thống</p>
+                </header>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card__icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                        <div class="stat-card__content">
+                            <div class="stat-card__number" id="total-students">0</div>
+                            <div class="stat-card__label">Tổng học sinh</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card__icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                                <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                            </svg>
+                        </div>
+                        <div class="stat-card__content">
+                            <div class="stat-card__number" id="total-classes">0</div>
+                            <div class="stat-card__label">Tổng lớp học</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card__icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </div>
+                        <div class="stat-card__content">
+                            <div class="stat-card__number" id="excellent-students">0</div>
+                            <div class="stat-card__label">Học sinh xuất sắc</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-content">
+                    <div class="chart-section">
+                        <div class="chart-card">
+                            <h3>Phân bố học sinh theo lớp</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="class-distribution-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <h3>Phân bố theo giáo khu</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="district-distribution-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tables-section">
+                        <div class="table-card">
+                            <h3>Top học sinh xuất sắc</h3>
+                            <div class="table-container" id="top-students-table">
+                                <!-- Table will be populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Page -->
+        <div class="page hidden" id="users-page">
+            <div class="container">
+                <header class="page-header">
+                    <div class="page-header__content">
+                        <div class="page-header__title">
+                            <h1>Quản lý Users</h1>
+                            <p>Quản lý người dùng và phân quyền</p>
+                        </div>
+                        <button class="btn btn--primary" id="add-user-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M8 12h8"/>
+                                <path d="M12 8v8"/>
+                            </svg>
+                            Thêm user
+                        </button>
+                    </div>
+                </header>
+
+                <div class="users-grid" id="users-grid">
+                    <!-- Users will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Classes Page -->
+        <div class="page hidden" id="classes-page">
+            <div class="container">
+                <header class="page-header">
+                    <div class="page-header__content">
+                        <div class="page-header__title">
+                            <h1>Quản lý Lớp học</h1>
+                            <p>Quản lý danh sách các lớp học</p>
+                        </div>
+                        <button class="btn btn--primary" id="add-class-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M8 12h8"/>
+                                <path d="M12 8v8"/>
+                            </svg>
+                            Thêm lớp
+                        </button>
+                    </div>
+                </header>
+
+                <div class="classes-grid" id="classes-grid">
+                    <!-- Classes will be populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Detail Modal -->
+    <div class="modal hidden" id="student-modal">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title">Thông tin học sinh</h2>
+                <button class="modal__close" id="student-modal-close">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal__body" id="student-modal-body">
+                <!-- Student details will be populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Student Modal -->
+    <div class="modal hidden" id="add-student-modal">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title" id="add-student-title">Thêm học sinh mới</h2>
+                <button class="modal__close" id="add-student-modal-close">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal__body">
+                <form id="add-student-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Tên thánh</label>
+                            <input type="text" class="form-control" id="student-ten-thanh" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Họ đệm</label>
+                            <input type="text" class="form-control" id="student-ho-dem" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Tên</label>
+                            <input type="text" class="form-control" id="student-ten" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Lớp</label>
+                            <select class="form-control" id="student-lop" required>
+                                <option value="">Chọn lớp</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Ngày sinh</label>
+                            <input type="date" class="form-control" id="student-ngay-sinh" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Ngày rửa tội</label>
+                            <input type="date" class="form-control" id="student-ngay-rua-toi" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phụ huynh</label>
+                        <input type="text" class="form-control" id="student-phu-huynh" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Giáo khu</label>
+                            <select class="form-control" id="student-giao-khu" required>
+                                <option value="">Chọn giáo khu</option>
+                                <option value="Giáo khu A">Giáo khu A</option>
+                                <option value="Giáo khu B">Giáo khu B</option>
+                                <option value="Giáo khu C">Giáo khu C</option>
+                                <option value="Giáo khu D">Giáo khu D</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="tel" class="form-control" id="student-sdt" required>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="cancel-add-student">Hủy</button>
+                        <button type="submit" class="btn btn--primary" id="submit-student">Thêm học sinh</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div class="modal hidden" id="add-user-modal">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title" id="add-user-title">Thêm user mới</h2>
+                <button class="modal__close" id="add-user-modal-close">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal__body">
+                <form id="add-user-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="user-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Họ tên</label>
+                            <input type="text" class="form-control" id="user-fullname" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-control" id="user-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Vai trò</label>
+                            <select class="form-control" id="user-role" required>
+                                <option value="">Chọn vai trò</option>
+                                <option value="ADMIN">Admin</option>
+                                <option value="TEACHER">Giáo viên</option>
+                                <option value="GUEST">Khách</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="cancel-add-user">Hủy</button>
+                        <button type="submit" class="btn btn--primary" id="submit-user">Thêm user</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Class Modal -->
+    <div class="modal hidden" id="add-class-modal">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title" id="add-class-title">Thêm lớp mới</h2>
+                <button class="modal__close" id="add-class-modal-close">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal__body">
+                <form id="add-class-form">
+                    <div class="form-group">
+                        <label class="form-label">Tên lớp</label>
+                        <input type="text" class="form-control" id="class-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" id="class-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="cancel-add-class">Hủy</button>
+                        <button type="submit" class="btn btn--primary" id="submit-class">Thêm lớp</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast hidden" id="toast">
+        <div class="toast__content">
+            <span class="toast__message" id="toast-message"></span>
+            <button class="toast__close" id="toast-close">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loading-overlay">
+        <div class="loading-spinner">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+            </svg>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
