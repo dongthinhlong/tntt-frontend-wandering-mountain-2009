@@ -3,9 +3,7 @@
 
 // Configuration
 const CONFIG = {
-    API_BASE_URL: window.location.hostname === 'localhost' 
-        ? 'http://localhost:3000/api' 
-        : 'https://tntt-backend-wandering-mountain-2009.fly.dev/api',
+    API_BASE_URL: 'https://tntt-backend-wandering-mountain-2009.fly.dev/api',
     TOKEN_KEY: 'tntt_token',
     USER_KEY: 'tntt_user',
     REQUEST_TIMEOUT: 10000
